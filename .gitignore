@@ -1,0 +1,4 @@
+*.fig
+canvas.json
+*.html
+__pycache__/
