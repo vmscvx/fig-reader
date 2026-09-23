@@ -1,5 +1,13 @@
 # fig-reader
 
+Read Figma `.fig` files without Figma or its API. Pure Python 3.14, no
+dependencies: decode the whole document to JSON, find frames, print a subtree
+with texts and geometry, render a frame to HTML. The kiwi decoder mirrors
+[evanw/kiwi](https://github.com/evanw/kiwi) byte for byte. Docs below are in
+Russian; commands and field names are the same in any language.
+
+---
+
 Чтение файлов Figma `.fig` без Figma и без API: узлы документа в JSON, поиск
 кадров, дерево с текстами и размерами, отрисовка кадра в HTML для сверки
 глазами. Чистый Python 3.14 (нужен встроенный `compression.zstd`), без
@@ -23,6 +31,24 @@ python test_kiwi.py                         # проверка декодера 
 
 HTML открывается браузером напрямую. Для просмотра целиком на узком экране:
 `document.body.style.zoom = innerWidth / 1920`.
+
+## Для AI-агентов
+
+Проект задуман так, чтобы агент (Claude Code, Codex и т. п.) мог снять макет
+сам, без человека с Figma:
+
+1. `python readfig.py макет.fig canvas.json` — один раз, дальше работать с JSON.
+2. `python fig.py find "<часть имени экрана>"` — найти кадр; у одинаковых имён
+   смотреть путь: «Прототип» часто пустая заготовка, настоящее — в «Дизайне»
+   или «Верстке».
+3. `python fig.py tree <guid> 4` — точные размеры, отступы, тексты, какие
+   символы вставлены. **Цифры брать отсюда, а не с картинки.**
+4. `python render.py макет.fig <guid> frame.html` и скриншот — посмотреть,
+   как это выглядит целиком.
+
+Весь документ — плоский список словарей в `canvas.json["nodes"]`: его можно
+разбирать своим кодом (`import fig` даёт `N`, `BY[guid]`, `KIDS[guid]`,
+`path()`, `line()`, `svg_path()`).
 
 ## Формат
 
@@ -77,6 +103,11 @@ HTML открывается браузером напрямую. Для прос
 размытие, повороты узлов, перестроение auto-layout у растянутых инстансов,
 смешанные стили внутри одного текста. Цифры (отступы, размеры, радиусы, цвета)
 снимать через `fig.py tree`, а не с картинки.
+
+## Лицензия
+
+MIT — см. [LICENSE](LICENSE). Формат kiwi и его эталонная реализация — MIT,
+© Evan Wallace; здесь независимая реализация на Python.
 
 ## Источники
 
